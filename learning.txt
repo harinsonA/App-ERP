@@ -1,0 +1,11 @@
+MODELO VISTA CONTROLADOR
+
+M = MODELO (Base de datos)
+V = VISTA (Pantallas)
+C = CONTROLADOR (Funciones)
+
+MODELO VISTA TEMPLATE
+
+M = MODELO (Base de datos)
+V = VISTA (Funciones)
+T = TEMPLATE (Pantallas)
