@@ -9,3 +9,6 @@ MODELO VISTA TEMPLATE
 M = MODELO (Base de datos)
 V = VISTA (Funciones)
 T = TEMPLATE (Pantallas)
+
+##########################
+Avances
