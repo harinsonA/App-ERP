@@ -1,11 +1,14 @@
+from pyexpat import model
 from typing import Any, Dict
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
-from django.http import JsonResponse
+from django.views.generic import ListView, CreateView
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from core.erp.forms import CategoryForm
 
 from core.erp.models import Category, Product
 
@@ -42,3 +45,19 @@ class CategoryListView(ListView):
         context['title'] = 'Listado de Categorías'
         #context['object_list'] = Product.objects.all()
         return context
+
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'category/create.html'
+    success_url = reverse_lazy('erp:category_list')
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        print(context)
+        context['title'] = 'Crear Categorías'
+        #context['object_list'] = Product.objects.all()
+        return context
+    
+    def post(self, request: HttpResponse, *args: str, **kwargs: Any) -> HttpResponse:
+        return super().post(request, *args, **kwargs)
