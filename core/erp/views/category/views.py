@@ -1,3 +1,4 @@
+from multiprocessing import context
 from pyexpat import model
 from typing import Any, Dict
 from django.contrib.auth.decorators import login_required
@@ -6,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from core.erp.forms import CategoryForm
 
@@ -43,6 +44,9 @@ class CategoryListView(ListView):
         context = super().get_context_data(**kwargs)
         print(context)
         context['title'] = 'Listado de Categorías'
+        context['create_url'] = reverse_lazy('erp:category_create')
+        context['list_url'] = reverse_lazy('erp:category_list')
+        context['entity'] = 'Categorías'
         #context['object_list'] = Product.objects.all()
         return context
 
@@ -54,10 +58,30 @@ class CategoryCreateView(CreateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        print(context)
         context['title'] = 'Crear Categorías'
+        context['entity'] = 'Categorías'
+        context['list_url'] = reverse_lazy('erp:category_list')
+        context['action'] = 'add'
         #context['object_list'] = Product.objects.all()
         return context
     
     def post(self, request: HttpResponse, *args: str, **kwargs: Any) -> HttpResponse:
-        return super().post(request, *args, **kwargs)
+        data = {}
+        try:
+            action = request.POST['action']
+            if action == 'add':
+                form = self.get_form()
+                data = form.save()
+            else:
+                data['error'] = 'No ha ingresado por ninguna opción'
+        except Exception as error:
+            data['error'] = str(error)
+        return JsonResponse(data)
+        # form = CategoryForm(request.POST)
+        # if form.is_valid():
+        #     form.save()
+        #     return HttpResponseRedirect(self.success_url)
+        # self.object = None
+        # context = self.get_context_data(**kwargs)
+        # context['form'] = form
+        # return render(request, self.template_name, context)
