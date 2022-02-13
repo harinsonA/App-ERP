@@ -29,7 +29,7 @@ class CategoryForm(ModelForm):
             )
         }
 
-    def save(self, commit: bool):
+    def save(self, commit=True):
         data = {}
         form = super()
         try:

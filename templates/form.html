@@ -43,12 +43,12 @@
             icon: 'error',
         })
     {% endif %}
-    messages_error()
+    //messages_error()
     $('form').on('submit',function (e) {
         e.preventDefault();
         let parameters = $(this).serializeArray();
         $.ajax({
-            url: '{% url "erp:category_create" %}',
+            url: window.location.pathname,
             type: 'POST',
             data: parameters,
             dataType: 'json'
