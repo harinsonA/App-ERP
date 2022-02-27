@@ -29,12 +29,27 @@ class CategoryListView(ListView):
         return super().dispatch(request, *args, **kwargs)
     
     def post(self, request, *args, **kwargs):
+        # .... primera forma
+        # data = {}
+        # try:
+        #     data = Category.objects.get(pk=request.POST['id']).toJSON()
+        # except Exception as error:
+        #     data['error'] = str(error)
+        # return JsonResponse(data)
+
+        # .... segunda forma con Ajax
         data = {}
         try:
-            data = Category.objects.get(pk=request.POST['id']).toJSON()
+            action = request.POST['action']
+            if action == 'searchdata':
+                data = []
+                for category in Category.objects.all():
+                    data.append(category.toJSON())
+            else:
+                data['error'] = 'Ha ocurrido un error'
         except Exception as error:
             data['error'] = str(error)
-        return JsonResponse(data)
+        return JsonResponse(data, safe=False)
     
 
     # def get_queryset(self):
@@ -121,6 +136,18 @@ class CategoryDeleteView(DeleteView):
     model = Category
     template_name = 'category/delete.html'
     success_url = reverse_lazy('erp:category_list')
+
+    def dispatch(self, request, *args: Any, **kwargs: Any):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        data = {}
+        try:
+            self.object.delete()
+        except Exception as error:
+            data['error'] = str(error)
+        return JsonResponse(data)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
